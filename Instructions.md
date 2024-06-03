@@ -1,10 +1,11 @@
 # Инструкции по запуску микросервиса
 
-### 1. FastAPI микросервис в виртуальном окружение
+### 1. FastAPI микросервис в виртуальном окружении
 
 ```
-python3 -m venv ./venv
-source ...
+python3 -m venv prod.env
+source prod.env/bin/activate
+pip install -r requirements.txt
 uvicorn ...
 ```
 
