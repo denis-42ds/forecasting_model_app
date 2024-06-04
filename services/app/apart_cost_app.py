@@ -1,14 +1,6 @@
-"""FastAPI-приложение для модели пронозирования стоимости квартир"""
-
-from fastapi import FastAPI, Body
-from apart_cost_fast_api_handler import FastApiHandler
-
-"""
-Пример запуска из директории mle-sprint3/app:
-uvicorn churn_app:app --reload --port 8081 --host 0.0.0.0
-
-Для просмотра документации API и совершения тестовых запросов зайти на http://127.0.0.1:8081/docs
-"""
+from fastapi import FastAPI
+from pydantic import BaseModel
+from apart_cost_fastapi_handler import FastApiHandler
 
 # создание FastAPI-приложения
 app = FastAPI()
@@ -16,19 +8,31 @@ app = FastAPI()
 # создание обработчика запросов для API
 app.handler = FastApiHandler()
 
-@app.post("/api/churn/") 
-def get_prediction_for_item(user_id: str, model_params: dict):
-    """Функция для получения вероятности оттока пользователя.
+class ModelParams(BaseModel):
+    ceiling_height: float = 2.5
+    building_type_int: int = 1
+    age_of_building: int = 47
+    distance_to_center: float = 10
+    rooms: int = 2
+    floors_total: int = 12
+    living_area: float = 50
+    kitchen_area: float = 10
+    floor: int = 7
+    flats_count: int = 500
+
+@app.post("/api/cost/") 
+def get_prediction_for_item(flat_id: str, model_params: ModelParams):
+    """Функция для получения прогноза стоимости квартиры.
 
     Args:
-        user_id (str): Идентификатор пользователя.
-        model_params (dict): Параметры пользователя, которые нужно передать в модель.
+        flat_id (str): Идентификатор квартиры.
+        model_params (ModelParams): Параметры квартиры, которые нужно передать в модель.
 
     Returns:
-        dict: Предсказание, уйдёт ли пользователь из сервиса.
+        dict: Предсказание стоимости квартиры с заданными параметрами.
     """
     all_params = {
-        "user_id": user_id,
-        "model_params": model_params
+        "flat_id": flat_id,
+        "model_params": model_params.dict()
     }
     return app.handler.handle(all_params)
