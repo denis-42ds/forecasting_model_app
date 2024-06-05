@@ -40,13 +40,23 @@ sh run_app_with_docker.sh
 Запуск FastAPI-микросервиса в режиме Docker Compose
 
 ```bash
-docker compose up  --build
+cd services
+docker compose up --build
 ```
 
 Для просмотра документации API и совершения тестовых запросов пройти по ссылке: [http://127.0.0.1:8081/docs](http://127.0.0.1:8081/docs)
 <br>Для остановки приложения: `docker compose down`
 
-### 3. Запуск сервисов для системы мониторинга
+### 3. Сервисы для системы мониторинга
 
+Запуск FastAPI-микросервиса и системы мониторинга: Prometheus и Grafana
 
+```bash
+cd services
+docker compose up --build
+```
 
+Для просмотра документации API и совершения тестовых запросов пройти по ссылке: [http://127.0.0.1:8081/docs](http://127.0.0.1:8081/docs)
+<br>Доступ к веб-интерфейсу Prometheus: [http://localhost:9090](http://localhost:9090)
+<br>Доступ к веб-интерфейсу Grafana: [http://localhost:3000](http://localhost:3000)
+<br>Для остановки приложения: `docker compose down`

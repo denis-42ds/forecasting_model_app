@@ -22,6 +22,6 @@
 
 ### Отчёт по выполнению
 1. Разработан [Fast-API микросервис](https://github.com/denis-42ds/mle_project_3/tree/main/services/app)
-2. Написан [Dockerfile]() для запуска микросервиса в контейнере
-3. Написан [docker-compose.yaml]() для запуска микросервиса в контейнере
-
+2. Написан [Dockerfile](https://github.com/denis-42ds/mle_project_3/blob/main/services/Dockerfile) для запуска микросервиса в контейнере
+3. Написан [docker-compose.yaml](https://github.com/denis-42ds/mle_project_3/blob/main/services/docker-compose.yaml) для запуска микросервиса в контейнере
+4. В [docker-compose.yaml](https://github.com/denis-42ds/mle_project_3/blob/main/services/docker-compose.yaml) добавлены системы мониторинга `Prometheus` и `Grafana`

@@ -1,12 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from prometheus_client import Counter
+from prometheus_client import Histogram
 from apart_cost_fastapi_handler import FastApiHandler
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # создание FastAPI-приложения
 app = FastAPI()
 
 # создание обработчика запросов для API
 app.handler = FastApiHandler()
+
+# создание и запуск экспортёра метрик
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
 
 class ModelParams(BaseModel):
     ceiling_height: float = 2.5

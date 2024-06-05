@@ -8,8 +8,8 @@ COPY ./models /models
 
 RUN pip3 install -r requirements.txt
 
-EXPOSE 8081
+EXPOSE ${APP_PORT}
 
 VOLUME /models
 
-CMD uvicorn apart_cost_app:app --reload --port 8081 --host 0.0.0.0
+CMD uvicorn apart_cost_app:app --reload --port ${APP_PORT} --host 0.0.0.0
