@@ -1,0 +1,10 @@
+services:
+  apart_cost_app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - type: bind
+        source: ./models
+        target: /models
