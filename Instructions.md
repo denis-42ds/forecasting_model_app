@@ -35,7 +35,7 @@ sh run_app_with_docker.sh
 ```
 
 Для просмотра документации API и совершения тестовых запросов пройти по ссылке: [http://127.0.0.1:8081/docs](http://127.0.0.1:8081/docs)
-<br>Для остановки приложения: `docker stop $(docker ps -q)`
+<br>Для остановки приложения: ```docker stop $(docker ps -q)```
 
 Запуск FastAPI-микросервиса в режиме Docker Compose
 
@@ -45,7 +45,7 @@ docker compose up --build
 ```
 
 Для просмотра документации API и совершения тестовых запросов пройти по ссылке: [http://127.0.0.1:8081/docs](http://127.0.0.1:8081/docs)
-<br>Для остановки приложения: `docker compose down`
+<br>Для остановки приложения: ```docker compose down```
 
 ### 3. Сервисы для системы мониторинга
 
@@ -57,6 +57,16 @@ docker compose up --build
 ```
 
 Для просмотра документации API и совершения тестовых запросов пройти по ссылке: [http://127.0.0.1:8081/docs](http://127.0.0.1:8081/docs)
-<br>Доступ к веб-интерфейсу Prometheus: [http://localhost:9090](http://localhost:9090)
-<br>Доступ к веб-интерфейсу Grafana: [http://localhost:3000](http://localhost:3000)
-<br>Для остановки приложения: `docker compose down`
+<br>Доступ к экспозиции метрик `Prometheus`: [http://localhost:8081/metrics](http://localhost:8081/metrics)
+<br>Доступ к веб-интерфейсу `Prometheus`: [http://localhost:9090](http://localhost:9090)
+<br>Доступ к веб-интерфейсу `Grafana`: [http://localhost:3000](http://localhost:3000)
+<br>Для остановки приложения: ```docker compose down```
+
+### 4. Скрипт для симуляции нагрузки на приложение
+
+Посылает десять запросов к сервису: по запросу раз в 5 секунд.
+<br>Запуск скрипта из директории `/services`
+
+```bash
+python3 ../generate_requests.py
+```

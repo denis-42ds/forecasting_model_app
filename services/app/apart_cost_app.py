@@ -15,6 +15,14 @@ app.handler = FastApiHandler()
 instrumentator = Instrumentator()
 instrumentator.instrument(app).expose(app)
 
+c = Counter('low_preds', 'forecast counter below 11,000,000')
+
+main_app_predictions = Histogram(
+    "main_app_predictions",
+    "Histogram of predictions",
+    buckets=(1, 2, 4, 5, 10)
+)
+
 class ModelParams(BaseModel):
     ceiling_height: float = 2.5
     building_type_int: int = 1
@@ -42,4 +50,11 @@ def get_prediction_for_item(flat_id: str, model_params: ModelParams):
         "flat_id": flat_id,
         "model_params": model_params.dict()
     }
+
+    prediction = app.handler.apart_cost_predict(model_params.dict())
+    main_app_predictions.observe(prediction)
+
+    if prediction < 11000000:
+        c.inc()
+
     return app.handler.handle(all_params)
