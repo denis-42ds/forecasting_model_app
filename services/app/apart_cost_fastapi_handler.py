@@ -3,8 +3,10 @@
 import json
 import joblib
 import logging
+import operator
 import numpy as np
-from catboost import CatBoostRegressor
+import pandas as pd
+from constants import MODEL_PATH, REQUIRED_MODEL_PARAMS, FEATURE_OPERATIONS
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,21 +22,9 @@ class FastApiHandler:
         }
 
         # список необходимых параметров модели
-        self.required_model_params = [
-                'ceiling_height',
-                'building_type_int',
-                'age_of_building',
-                'rooms',
-                'distance_to_center',
-                'floors_total',
-                'living_area',
-                'kitchen_area',
-                'floor',
-                'flats_count'
-            ]
+        self.required_model_params = REQUIRED_MODEL_PARAMS
 
-        model_path = '../models/fitted_model.pkl'
-        self.load_cost_model(model_path=model_path)
+        self.load_cost_model(model_path=MODEL_PATH)
 
     def load_cost_model(self, model_path: str):
         """Загрузка обученной модели предсказания стоимости квартиры.
@@ -43,8 +33,7 @@ class FastApiHandler:
             model_path (str): Путь до модели.
         """
         try:
-            with open(model_path, 'rb') as fd:
-                self.model = joblib.load(fd)
+            self.model = joblib.load(model_path)
             return True
         except Exception as e:
             logging.error(f"Failed to load the model: {e}")
@@ -60,41 +49,24 @@ class FastApiHandler:
             float: Стоимость квартиры.
         """
         # добавление расчётных параметров
-        total_model_params = model_params
-        total_model_params['age_of_building*rooms'] = total_model_params['age_of_building'] * total_model_params['rooms']
-        total_model_params['distance_to_center*floors_total'] = total_model_params['distance_to_center'] * total_model_params['floors_total']
-        total_model_params['living_area_rooms_ratio'] = total_model_params['living_area'] / total_model_params['rooms']
-        total_model_params['distance_to_center*exp(rooms)'] = total_model_params['distance_to_center'] * np.exp(total_model_params['rooms'])
-        total_model_params['age_of_building*distance_to_center'] = total_model_params['age_of_building'] * total_model_params['distance_to_center']
-        total_model_params['floors_total*rooms'] = total_model_params['floors_total'] * total_model_params['rooms']
-        total_model_params['floor*floors_total'] = total_model_params['floor'] * total_model_params['floors_total']
-        total_model_params['distance_to_center*flats_count'] = total_model_params['distance_to_center'] * total_model_params['flats_count']
-        total_model_params['flats_count*rooms'] = total_model_params['flats_count'] * total_model_params['rooms']
-        total_model_params['floor*exp(rooms)'] = total_model_params['floor'] * np.exp(total_model_params['rooms'])
-        total_model_params['floors_total*exp(rooms)'] = total_model_params['floors_total'] * np.exp(total_model_params['rooms'])
+        model_input = {}
 
-        # явное указание порядка параметров
-        model_input = [
-            total_model_params['ceiling_height'],
-            total_model_params['building_type_int'],
-            total_model_params['age_of_building*rooms'],
-            total_model_params['distance_to_center'],
-            total_model_params['distance_to_center*floors_total'],
-            total_model_params['living_area_rooms_ratio'],
-            total_model_params['age_of_building'],
-            total_model_params['distance_to_center*exp(rooms)'],
-            total_model_params['kitchen_area'],
-            total_model_params['age_of_building*distance_to_center'],
-            total_model_params['floors_total*rooms'],
-            total_model_params['floor*floors_total'],
-            total_model_params['distance_to_center*flats_count'],
-            total_model_params['flats_count*rooms'],
-            total_model_params['floor*exp(rooms)'],
-            total_model_params['living_area'],
-            total_model_params['floors_total*exp(rooms)']
-        ]
+        for feature_pair in FEATURE_OPERATIONS:
+            feature1, feature2, operation = feature_pair
+            if feature1 in model_params:
+                if feature2 is None:
+                    model_input[feature1] = model_params[feature1]
+                elif feature2 in model_params:
+                    if operation == operator.truediv:
+                        model_input[f'{feature1}_{feature2}_ratio'] = operation(model_params[feature1], model_params[feature2])
+                    elif operation == np.exp:
+                        model_input[f'{feature1}*exp({feature2})'] = model_params[feature1] * operation(model_params[feature2])
+                    else:
+                        model_input[f'{feature1}*{feature2}'] = operation(model_params[feature1], model_params[feature2])
 
-        return self.model.predict([model_input])
+        model_input = pd.DataFrame([model_input])
+
+        return self.model.predict(model_input)
 
     def check_required_query_params(self, query_params: dict) -> bool:
         """Проверяем параметры запроса на наличие обязательного набора.
@@ -179,6 +151,10 @@ class FastApiHandler:
                         "flat_id": flat_id, 
                         "predicted_apart_cost": predicted_apart_cost
                     }
+                logging.info(response)
+        except KeyError as e:
+            logging.error(f"KeyError while handling request: {e}")
+            return {"Error": "Missing key in request"}
         except Exception as e:
             logging.error(f"Error while handling request: {e}")
             return {"Error": "Problem with request"}
@@ -192,7 +168,7 @@ if __name__ == "__main__":
         "flat_id": '333990123',
         "model_params": {
                     "ceiling_height": 2.5,
-                    "building_type_int": 1,
+                    "building_type_int": 4,
                     "age_of_building": 47,
                     "distance_to_center": 10,
                     "rooms": 2,

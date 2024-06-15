@@ -70,3 +70,9 @@ docker compose up --build
 ```bash
 python3 ../generate_requests.py
 ```
+
+либо:
+
+```bash
+sh ../send_request.sh
+```

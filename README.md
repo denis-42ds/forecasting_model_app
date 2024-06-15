@@ -1,4 +1,4 @@
-# Название проекта: Релиз модели в продакшен.
+# Название проекта: Релиз модели прогнозирования стоимости квартир в продакшен.
 
 ### Бизнес-задача
 <br>Вывести модель в продакшен и соблюсти следующие условия:
@@ -25,3 +25,4 @@
 3. Написан [docker-compose.yaml](https://github.com/denis-42ds/mle_project_3/blob/main/services/docker-compose.yaml) для запуска микросервиса в контейнере
 4. В [docker-compose.yaml](https://github.com/denis-42ds/mle_project_3/blob/main/services/docker-compose.yaml) добавлены системы мониторинга `Prometheus` и `Grafana`
 5. Построен dashbord, файл с его настройками: [dashboard.json](https://github.com/denis-42ds/mle_project_3/blob/main/services/dashboard.json)
+

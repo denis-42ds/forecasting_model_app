@@ -23,10 +23,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
-      },
+      "datasource": {},
       "description": "Total sum of all observed values for the histogram metric (Latency with only few buckets by handler. Made to be only used if aggregation by handler is important. )\t",
       "fieldConfig": {
         "defaults": {
@@ -124,10 +121,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -199,9 +193,9 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
+        "uid": "ddoupcm98kav4b"
       },
-      "description": "Median predicted value",
+      "description": "Median, 0.05 quantile and 0.95 quantile predicted value",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -283,21 +277,44 @@
             "uid": "fdo1mf0wxa9kwe"
           },
           "editorMode": "code",
-          "expr": "quantile(0.5, main_app_predictions_bucket)",
+          "expr": "histogram_quantile(0.5, main_app_predictions_bucket)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ddoupcm98kav4b"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, main_app_predictions_bucket)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ddoupcm98kav4b"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.05, main_app_predictions_bucket)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
         }
       ],
-      "title": "Median predicted value",
+      "title": "Model response quantiles",
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
-      },
+      "datasource": {},
       "description": "Total user and system CPU time spent in seconds.",
       "fieldConfig": {
         "defaults": {
@@ -398,9 +415,9 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
+        "uid": "ddoupcm98kav4b"
       },
-      "description": "Histogram of predictions",
+      "description": "Predictions chart",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -413,7 +430,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "drawStyle": "line",
+            "drawStyle": "bars",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
@@ -422,13 +439,13 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "always",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -482,8 +499,8 @@
             "uid": "fdo1mf0wxa9kwe"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "main_app_predictions_created",
+          "editorMode": "code",
+          "expr": "increase(main_app_predictions_sum[1m]) / increase(main_app_predictions_count[1m])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -493,14 +510,11 @@
           "useBackend": false
         }
       ],
-      "title": "Histogram of predictions",
+      "title": "Predictions chart",
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
-      },
+      "datasource": {},
       "description": "Resident memory size in bytes.",
       "fieldConfig": {
         "defaults": {
@@ -571,11 +585,8 @@
       "type": "gauge"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
-      },
-      "description": "",
+      "datasource": {},
+      "description": "Count of events that have been observed for the histogram metric (Latency with only few buckets by handler. Made to be only used if aggregation by handler is important. )",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -699,7 +710,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdo1mf0wxa9kwe"
+        "uid": "cdod6h2oss7b4c"
       },
       "description": "Errors (rate of failed requests)",
       "fieldConfig": {
@@ -801,7 +812,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
